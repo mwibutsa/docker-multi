@@ -7,7 +7,7 @@ before_install:
   - docker build -t mwibutsa/client-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run mwibutsa/client-test npm run test
+  - docker run -e CI=true mwibutsa/client-test npm run test -- --coverage
 
 after_sucess:
   - docker build -t mwibutsa/multi-client ./client
