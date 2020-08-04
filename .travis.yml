@@ -1,0 +1,23 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t mwibutsa/client-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run mwibutsa/client-test npm run test
+
+after_sucess:
+  - docker build -t mwibutsa/multi-client ./client
+  - docker built -t mwibutsa/multi-server ./server
+  - docker build -t mwibutsa/multi-worker ./worker
+  - docker build -t mwibutsa/multi-nginx ./nginx
+  # LOG INTO DOCKER HUB
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # PUSH IMAGES TO THE DOCKER HUB
+  - docker push mwibutsa/multi-client
+  - docker push mwibutsa/multi-server
+  - docker push mwibutsa/multi-worker
+  - docker push mwibutsa/multi-nginx
